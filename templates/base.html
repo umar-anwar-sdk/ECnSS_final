@@ -1,0 +1,596 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Entry Check System</title>
+    <link rel="icon" type="image/png" sizes="120px" href="{% static 'assets/images/favicon.png' %}">
+
+    <!-- Library / Plugin Css Build -->
+    <link rel="stylesheet" href="{% static 'assets/css/core/libs.min.css' %}" />
+
+    <!-- Hope Ui Design System Css -->
+    <link rel="stylesheet" href="{% static 'assets/css/hope-ui.min.css' %}" />
+
+    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+    <style>
+        .detection-wrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            border-radius: 8px;
+        }
+
+        .detection-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .detection-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 8px;
+        }
+
+        .detection-wrapper::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 8px;
+        }
+
+        .detection-wrapper::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        #detection-container .col-12 {
+            transition: all 0.3s ease;
+        }
+
+        #detection-container .col-12:hover {
+            transform: translateX(2px);
+            background-color: #f8f9fa;
+        }
+
+        #detection-container>div:not(:last-child) {
+            border-bottom: 1px solid #eee;
+        }
+
+        #detection-status {
+            width: 3in;
+            position: fixed;
+            top: 5%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            text-align: center;
+            display: none;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar sidebar-default sidebar-white sidebar-base navs-rounded-all shadow">
+        <div class="sidebar-header d-flex align-items-center justify-content-start">
+            <a href="{% url 'home' %}" class="navbar-brand">
+
+                <!--Logo start-->
+                <div class="logo-main">
+                    <div class="logo-normal">
+                        <img src="{% static 'assets/images/logo.png' %}" href="{% url 'home' %}" alt="logo"
+                            class="img-fluid">
+                    </div>
+                    <div class="logo-mini">
+                        <img src="{% static 'assets/images/llogo.png' %}" href="{% url 'home' %}" alt="logo"
+                            class="img-fluid">
+                    </div>
+                </div>
+
+            </a>
+
+            <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                <i class="icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4.25 12.2744L19.25 12.2744" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M10.2998 18.2988L4.2498 12.2748L10.2998 6.24976" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </i>
+            </div>
+        </div>
+        <div class="sidebar-body pt-0 data-scrollbar">
+            <div class="sidebar-list">
+                <!-- Sidebar Menu Start -->
+                <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'home' %}">
+                            <i class="icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="currentColor" d="M12 3L2 12H5V20H10V15H14V20H19V12H22L12 3Z" />
+                                </svg>
+                            </i>
+                            <span class="item-name">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'camera_list' %}">
+                            <i class="icon">
+                                <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill="currentColor"
+                                        d="M23 3H1C0.447 3 0 3.447 0 4V20C0 20.553 0.447 21 1 21H23C23.553 21 24 20.553 24 20V4C24 3.447 23.553 3 23 3ZM2 19V5H22V19H2ZM4 7H6V9H4V7ZM4 11H6V13H4V11ZM4 15H6V17H4V15Z">
+                                    </path>
+                                </svg>
+                            </i>
+                            <span class="item-name">All Cameras</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="start-detection" class="nav-link" href="#">
+                            <i class="icon">
+                                <svg width="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                    class="icon-20">
+                                    <path d="M6 5L16 12L6 19V5Z" fill="currentColor"></path>
+                                </svg>
+                            </i>
+                            <span class="item-name">Start Detection</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a id="stop-detection" class="nav-link" href="#">
+                            <i class="icon">
+                                <svg width="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
+                                    class="icon-20">
+                                    <rect x="6" y="6" width="12" height="12" fill="currentColor"></rect>
+                                </svg>
+                            </i>
+                            <span class="item-name">Stop Detection</span>
+                        </a>
+                    </li>
+                    
+                    <div id="detection-status"></div>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'detection_history' %}">
+                            <i class="icon">
+                                <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" stroke="currentColor"
+                                        stroke-width="2" fill="none"></rect>
+                                    <circle cx="9" cy="12" r="3" fill="currentColor"></circle>
+                                    <path d="M15 10L20 14V6L15 10Z" fill="currentColor"></path>
+                                </svg>
+
+                            </i>
+                            <span class="item-name">Detection History</span>
+                        </a>
+                    </li>
+
+
+                    <!-- <li class="nav-item ">
+                                <button type="button" class="btn btn-primary">Primary</button>
+
+                     </li> -->
+
+                </ul>
+                <!-- Sidebar Menu End -->
+            </div>
+        </div>
+        <div class="sidebar-footer"></div>
+    </aside>
+    <main class="main-content overflow-hidden">
+        <div class="position-relative iq-banner">
+            <!--Nav Start-->
+            <nav class="nav navbar navbar-expand-lg navbar-light iq-navbar shadow">
+                <div class="container-fluid navbar-inner d-flex justify-content-end pe-4">
+                    <a href="#" class="navbar-brand">
+                        <!--Logo start-->
+                        <!--logo End-->
+
+                        <!--Logo start-->
+                        <div class="logo-main">
+                            <div class="logo-normal">
+                                <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2"
+                                        transform="rotate(-45 -0.757324 19.2427)" fill="currentColor" />
+                                    <rect x="7.72803" y="27.728" width="28" height="4" rx="2"
+                                        transform="rotate(-45 7.72803 27.728)" fill="currentColor" />
+                                    <rect x="10.5366" y="16.3945" width="16" height="4" rx="2"
+                                        transform="rotate(45 10.5366 16.3945)" fill="currentColor" />
+                                    <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2"
+                                        transform="rotate(45 10.5562 -0.556152)" fill="currentColor" />
+                                </svg>
+                            </div>
+                            <div class="logo-mini">
+                                <svg class="text-primary icon-30" viewBox="0 0 30 30" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="-0.757324" y="19.2427" width="28" height="4" rx="2"
+                                        transform="rotate(-45 -0.757324 19.2427)" fill="currentColor" />
+                                    <rect x="7.72803" y="27.728" width="28" height="4" rx="2"
+                                        transform="rotate(-45 7.72803 27.728)" fill="currentColor" />
+                                    <rect x="10.5366" y="16.3945" width="16" height="4" rx="2"
+                                        transform="rotate(45 10.5366 16.3945)" fill="currentColor" />
+                                    <rect x="10.5562" y="-0.556152" width="28" height="4" rx="2"
+                                        transform="rotate(45 10.5562 -0.556152)" fill="currentColor" />
+                                </svg>
+                            </div>
+                        </div>
+                        <!--logo End-->
+                        <h4 class="logo-title">CCTV</h4>
+                    </a>
+                    <div class="sidebar-toggle" data-toggle="sidebar" data-active="true">
+                        <i class="icon">
+                            <svg width="20px" class="icon-20" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z" />
+                            </svg>
+                        </i>
+                    </div>
+                    <div>
+                        <a class="btn btn-bg-custom text-white" href="{% url 'logout' %}">
+                            <i
+                                class="fa-solid fa-right-from-bracket text-white"></i></a>
+                    </div>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon">
+                            <span class="mt-2 navbar-toggler-bar bar1"></span>
+                            <span class="navbar-toggler-bar bar2"></span>
+                            <span class="navbar-toggler-bar bar3"></span>
+                        </span>
+                    </button>
+
+                </div>
+            </nav>
+            <!--Nav End-->
+        </div>
+        {% block content %}
+        {% endblock %}
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+       <script>
+        function showAlert(message, type = "primary") {
+    const toastElement = document.getElementById('liveToast');
+    const toastMessage = document.getElementById('toast-message');
+
+    // Update message and background color
+    toastMessage.innerText = message;
+    toastElement.className = `toast align-items-center text-white bg-${type} border-0`;
+
+    // Show toast
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+}
+
+// Function to show the full-screen loader
+function showFullScreenLoader() {
+    let loader = document.getElementById("fullscreen-loader");
+    if (!loader) {
+        loader = document.createElement("div");
+        loader.id = "fullscreen-loader";
+        loader.style.position = "fixed";
+        loader.style.top = "0";
+        loader.style.left = "0";
+        loader.style.width = "100%";
+        loader.style.height = "100%";
+        loader.style.background = "rgba(0, 0, 0, 0.5)";
+        loader.style.display = "flex";
+        loader.style.justifyContent = "center";
+        loader.style.alignItems = "center";
+        loader.style.zIndex = "9999";
+        loader.innerHTML = `
+           <div class="spinner-border" style="width: 8rem; height: 8rem; color: #209BA4;" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+        `;
+        document.body.appendChild(loader);
+    } else {
+        loader.style.display = "flex";
+    }
+}
+
+// Function to hide the full-screen loader
+function hideFullScreenLoader() {
+    const loader = document.getElementById("fullscreen-loader");
+    if (loader) {
+        loader.style.display = "none";
+    }
+}
+
+$(document).ready(function () {
+    $("#start-detection").click(function (event) {
+        event.preventDefault();
+        showAlert("Starting detection...", "warning");
+        showFullScreenLoader();
+
+        $.ajax({
+            url: "{% url 'start_dection' %}",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                hideFullScreenLoader();
+                if (response.success) {
+                    showAlert(response.message, "success");
+                } else {
+                    showAlert("Error: " + response.message, "danger");
+                }
+            },
+            error: function (xhr, status, error) {
+                hideFullScreenLoader();
+                showAlert("Error: " + error, "danger");
+            }
+        });
+    });
+
+    $("#stop-detection").click(function (event) {
+        event.preventDefault();
+        showAlert("Stopping detection...", "warning");
+        showFullScreenLoader();
+
+        $.ajax({
+            url: "{% url 'stop_dection' %}",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                hideFullScreenLoader();
+                if (response.success) {
+                    showAlert(response.message, "success");
+                } else {
+                    showAlert("Error: " + response.message, "danger");
+                }
+            },
+            error: function (xhr, status, error) {
+                hideFullScreenLoader();
+                showAlert("Error: " + error, "danger");
+            }
+        });
+    });
+});
+
+       </script>
+
+        <script>
+            const checkInContainer = document.getElementById('detection-container');
+            const checkOutContainer = document.getElementById('detection-container-checkout');
+            const socket = new WebSocket('ws://' + window.location.host + '/ws/detections/');
+            const MAX_DETECTIONS = 50;
+            const displayedDetections = new Set();
+
+            socket.onopen = function () {
+                console.log('WebSocket connection established');
+            };
+
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                console.log('Received WebSocket Data:', data);
+
+                const detectionId = data.plate_number;
+
+                if (!displayedDetections.has(detectionId)) {
+                    displayedDetections.add(detectionId);
+
+                    const vehicleType = data.vehicle_class?.toLowerCase() || '';
+                    const showHelmet = vehicleType.includes('motorcycle') || vehicleType.includes('bike');
+                    const helmetValue = data.helmet === "Yes" ? "Yes" : "No";
+                    const showSeatbelt = vehicleType.includes('car') || vehicleType.includes('truck') || vehicleType.includes('bus');
+                    const seatbeltValue = data.seatbelt === "Yes" ? "Yes" : "No";
+                    const formattedTimestamp = new Date(data.timestamp * 1000).toLocaleString();
+                    const detectionType = data.detection_type || 'Unknown';
+                    const status = data.status || 'Unknown';
+
+                    // Show toast notification
+                    showAlert(`Status: ${status}`, "info"); // Blue info toast
+
+                    const targetContainer = detectionType === '1' ? checkInContainer : checkOutContainer;
+
+                    const detectionCard = `
+            <div class="col-12 mb-3 bg-white ps-3 rounded-3">
+                <div class="row align-items-center">
+                    <div class="col-5 p-0">
+                        <img src="${data.image_url}" 
+                             class="rounded-2" 
+                             height="70px" 
+                             width="100%" 
+                             alt="Detection Image"
+                             onerror="this.src='/static/assets/images/download.jpg'" />
+                    </div>
+                    <div class="col-7">
+                        <p class="mb-0 fw-bold" style="font-size: 13px;">
+                            Plate: ${data.plate_number || 'N/A'}<br />
+                            Vehicle Class: ${data.vehicle_class || 'N/A'}<br />
+                            Time: ${formattedTimestamp}<br />
+                            ${showHelmet ? `Helmet: ${helmetValue}<br />` : ''}
+                            ${showSeatbelt ? `Seatbelt: ${seatbeltValue}<br />` : ''}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        `;
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = detectionCard;
+                    const newCard = tempDiv.firstElementChild;
+                    newCard.style.opacity = '0';
+                    targetContainer.insertBefore(newCard, targetContainer.firstChild);
+
+                    requestAnimationFrame(() => {
+                        newCard.style.opacity = '1';
+                    });
+
+                    while (targetContainer.children.length > MAX_DETECTIONS) {
+                        const removedCard = targetContainer.lastChild;
+                        const removedPlate = removedCard.querySelector('p').textContent.match(/Plate: (.*?)\n/)[1];
+                        displayedDetections.delete(removedPlate);
+                        targetContainer.removeChild(removedCard);
+                    }
+
+                    targetContainer.parentElement.scrollTop = 0;
+                }
+            };
+
+            socket.onclose = function () {
+                console.error('WebSocket connection closed');
+                showAlert("WebSocket connection closed. Reconnecting...", "warning");
+
+                setTimeout(() => {
+                    window.location.reload();
+                }, 5000);
+            };
+
+            socket.onerror = function (error) {
+                console.error('WebSocket error:', error);
+                showAlert("WebSocket error occurred!", "danger");
+            };
+
+        </script>
+
+
+        <script>
+            {% for camera in cameras %}
+            (function (cameraId) {
+                let ws = null;
+                let peerConnection = null;
+                const STUN_SERVERS = {
+                    iceServers: [
+                        { urls: "stun:stun.l.google.com:19302" },
+                        { urls: "stun:stun1.l.google.com:19302" }
+                    ]
+                };
+                const videoElement = document.getElementById(`feed-${cameraId}`);
+
+                if (!videoElement) {
+                    console.error(`Video element for camera ${cameraId} not found`);
+                    return;
+                }
+
+                function connectWebSocket() {
+                    try {
+                        const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+                        const fullWsUrl = `${wsProtocol}//${window.location.host}/ws/camera/${cameraId}/`;
+
+                        ws = new WebSocket(fullWsUrl);
+
+                        ws.onopen = () => {
+                            console.log(`WebSocket connected for camera ${cameraId}`);
+                            startWebRTC();
+                        };
+
+                        ws.onmessage = async (event) => {
+                            try {
+                                const message = JSON.parse(event.data);
+                                console.log(`Received message for camera ${cameraId}:`, message);  // Debug log
+
+                                if (message.type === "offer") {
+                                    await peerConnection.setRemoteDescription(new RTCSessionDescription(message));
+                                    const answer = await peerConnection.createAnswer();
+                                    await peerConnection.setLocalDescription(answer);
+                                    ws.send(JSON.stringify({
+                                        type: "answer",
+                                        sdp: answer.sdp
+                                    }));
+                                }
+                            } catch (error) {
+                                console.error(`Error handling WebSocket message for camera ${cameraId}:`, error);
+                            }
+                        };
+
+                        ws.onclose = () => {
+                            console.warn(`WebSocket closed for camera ${cameraId}`);
+                            setTimeout(connectWebSocket, 5000);
+                        };
+
+                        ws.onerror = (error) => {
+                            console.error(`WebSocket error for camera ${cameraId}:`, error);
+                        };
+                    } catch (error) {
+                        console.error(`Error connecting WebSocket for camera ${cameraId}:`, error);
+                    }
+                }
+
+                function startWebRTC() {
+                    try {
+                        peerConnection = new RTCPeerConnection(STUN_SERVERS);
+
+                        peerConnection.ontrack = (event) => {
+                            console.log(`Receiving media stream for camera ${cameraId}`);
+                            if (event.streams && event.streams[0]) {
+                                videoElement.srcObject = event.streams[0];
+                                videoElement.play().catch(error => {
+                                    console.error(`Error playing video for camera ${cameraId}:`, error);
+                                });
+                            }
+                        };
+
+                        peerConnection.onicecandidate = (event) => {
+                            if (event.candidate) {
+                                console.log(`Sending ICE candidate for camera ${cameraId}:`, event.candidate);  // Debug log
+                                ws.send(JSON.stringify({
+                                    type: "candidate",
+                                    candidate: {
+                                        candidate: event.candidate.candidate,
+                                        sdpMid: event.candidate.sdpMid,
+                                        sdpMLineIndex: event.candidate.sdpMLineIndex
+                                    }
+                                }));
+                            }
+                        };
+
+                        peerConnection.oniceconnectionstatechange = () => {
+                            console.log(`ICE connection state for camera ${cameraId}:`, peerConnection.iceConnectionState);
+                        };
+                    } catch (error) {
+                        console.error(`Error starting WebRTC for camera ${cameraId}:`, error);
+                    }
+                }
+                connectWebSocket();
+                window.addEventListener('unload', () => {
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.close();
+                    }
+                    if (peerConnection) {
+                        peerConnection.close();
+                    }
+                });
+            })({{ camera.id }});
+            {% endfor %}
+        </script>
+        <script>
+            // Bootstrap form validation
+            (() => {
+                'use strict';
+                const forms = document.querySelectorAll('.needs-validation');
+                Array.from(forms).forEach(form => {
+                    form.addEventListener('submit', event => {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            })();
+        </script>
+        <!-- Library Bundle Script -->
+        <script src="{% static 'assets/js/core/libs.min.js' %}"></script>
+
+        <!-- External Library Bundle Script -->
+        <script src="{% static 'assets/js/core/external.min.js' %}"></script>
+        <!-- App Script -->
+        <script src="{% static 'assets/js/hope-ui.js' %}" defer></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+            crossorigin="anonymous"></script>
+</body>
+
+</html>

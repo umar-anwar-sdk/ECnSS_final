@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+    <style>
+        body {
+            background-image: url("{% static '/assets/images/camera_y.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .card {
+            max-width: 500px;
+            width: 100%;
+            margin: auto;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .form-control {
+            padding: 0.75rem 1rem;
+        }
+    </style>
+    <div class="container mt-5 d-flex justify-content-center form-container">
+        <div class="card">
+            <div class="card-header bg-custom text-white rounded-top-4 py-2 text-center">
+                <h2 class="mb-0">Add New Camera</h2>
+            </div>
+            <div class="card-body p-4">
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <!-- Username and Password Fields in one line -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12">
+                            <label for="username" class="form-label ms-1 fw-bold">Username</label>
+                            <input type="text" name="username" id="username" class="form-control rounded-5" placeholder="Enter camera username" required aria-describedby="usernameHelp">
+                            <div class="invalid-feedback">
+                                Please provide a username.
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="password" class="form-label ms-1 fw-bold">Password</label>
+                            <input type="password" name="password" id="password" class="form-control rounded-5" placeholder="Enter camera password" required aria-describedby="passwordHelp">
+                            <div class="invalid-feedback">
+                                Please provide a password.
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label for="ip" class="form-label ms-1 fw-bold">Camera IP</label>
+                            <input type="text" name="ip" id="ip" class="form-control rounded-5" placeholder="Enter camera ip" required aria-describedby="ipHelp">
+                            <div class="invalid-feedback">
+                                Please provide a IP.
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Channel Name Field -->
+                    <div class="mb-4">
+                        <label for="channel_name" class="form-label ms-1 fw-bold">Channel Name</label>
+                        <input type="text" name="channel_name" id="channel_name" class="form-control rounded-5" placeholder="Enter channel name (e.g., 1, 2, 3)" required aria-describedby="channelNameHelp">
+                        <div class="invalid-feedback">
+                            Please provide a channel name.
+                        </div>
+                    </div>
+                    <!-- Camera Action Selection -->
+                    <div class="mb-3"></div>
+                        <label class="form-label">Action:</label>
+                        <ul class="list-unstyled">
+                            <li>
+                                <label>
+                                    <input type="radio" name="check_option" value="0" 
+                                           {% if camera.camera_type == "0" %}checked{% endif %}>
+                                    Check-out
+                                </label>
+                            </li>
+                            <li>
+                                <label>
+                                    <input type="radio" name="check_option" value="1" 
+                                           {% if camera.camera_type == "1" %}checked{% endif %}>
+                                    Check-in
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                    <!-- Submit Button -->
+                    <div class="fw-medium text-center pb-3">
+                        <button type="submit" class="btn btn-bg-custom fw-bold text-white">Add Camera</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

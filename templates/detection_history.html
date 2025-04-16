@@ -1,0 +1,179 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container-fluid px-4 mt-4 mb-5">
+  <h1>Detection History</h1>
+  <table
+    id="example"
+    class="display responsive nowrap table table-striped table-bordered w-100"
+  >
+    <thead class="thead-dark">
+      <tr>
+        <th>Vehicle Images</th>
+        <th>Vehicle</th>
+        <th>Number Plate</th>
+        <th>Check In</th>
+        <th>Check Out</th>
+        <th>Helmet</th>
+        <th>Seatbelt</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for detection in detectionRecords %} {% if detection.plate_number %}
+      <tr>
+        <td>
+            <a href="{% url 'view_images' detection.id %}" style="text-decoration: none">
+          <!-- Image Slider -->
+          <div
+            id="carousel-{{ detection.id }}"
+            class="carousel slide"
+            data-bs-ride="false"
+          >
+            <div class="carousel-inner">
+              {% if detection.vehicle_image %}
+              <div class="carousel-item active">
+                <img
+                  src="{{ detection.vehicle_image.url }}"
+                  class="d-block w-100"
+                  style="height: 150px; object-fit: fill; border-radius: 5px"
+                  alt="Vehicle Image"
+                />
+              </div>
+              {% endif %} {% if detection.license_plate_image %}
+              <div class="carousel-item">
+                <img
+                  src="{{ detection.license_plate_image.url }}"
+                  class="d-block w-100"
+                  style="height: 150px; object-fit: fill; border-radius: 5px"
+                  alt="License Plate Image"
+                />
+              </div>
+              {% endif %} {% if detection.full_frame_image %}
+              <div class="carousel-item">
+                <img
+                  src="{{ detection.full_frame_image.url }}"
+                  class="d-block w-100"
+                  style="height: 150px; object-fit: fill; border-radius: 5px"
+                  alt="License Plate Image"
+                />
+              </div>
+              {% endif %} {% if detection.helmet_image %}
+              <div class="carousel-item">
+                <img
+                  src="{{ detection.helmet_image.url }}"
+                  class="d-block w-100"
+                  style="height: 150px; object-fit: fill; border-radius: 5px"
+                  alt="Helmet Detection Image"
+                />
+              </div>
+              {% endif %} {% if detection.seatbelt_image %}
+              <div class="carousel-item">
+                <img
+                  src="{{ detection.seatbelt_image.url }}"
+                  class="d-block w-100"
+                  style="height: 150px; object-fit: fill; border-radius: 5px"
+                  alt="Seatbelt Detection Image"
+                />
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </td>
+        <td>{{ detection.vehicle_class }}</td>
+        <td>{{ detection.plate_number }}</td>
+        <td>{{ detection.check_in_time }}</td>
+        <td>{{ detection.check_out_time }}</td>
+        <td class="text-center">
+          {% if detection.has_helmet %}
+          <span class="text-success"
+            ><i class="fa-solid fa-check fa-2xl"></i
+          ></span>
+          {% else %}
+          <span class="text-danger"
+            ><i class="fa-solid fa-xmark fa-2xl"></i
+          ></span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          {% if detection.has_seatbelt %}
+          <span class="text-success"
+            ><i class="fa-solid fa-check fa-2xl"></i
+          ></span>
+          {% else %}
+          <span class="text-danger"
+            ><i class="fa-solid fa-xmark fa-2xl"></i
+          ></span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          <a
+            href="{% url 'detection_update' detection.id %}"
+            class="btn bg-custom btn-sm text-white"
+            ><i class="fa-solid fa-pen-to-square"></i
+          ></a>
+          <a
+            href="{% url 'detection_delete' detection.id %}"
+            class="btn btn-danger btn-sm text-white"
+            ><i class="fa-solid fa-trash"></i
+          ></a>
+        </td>
+      </tr>
+      {% endif %} {% endfor %}
+    </tbody>
+  </table>
+</div>
+<footer
+  class="footer bg-body-secondary mt-2 border-top position-fixed w-100"
+  style="bottom: 0"
+>
+  <div
+    class="d-flex flex-wrap justify-content-center py-2 flex-md-row flex-column"
+  >
+    <p class="mb-0">
+      Designed &amp; Developed by
+      <a href="https://dynamicbits.tech/" class="text-custom" target="_blank"
+        >DynamicBits</a
+      >
+    </p>
+  </div>
+</footer>
+
+<!-- jQuery & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- Image Slider Hover Effect -->
+<script>
+  $(document).ready(function () {
+    $("#example").DataTable({
+      responsive: true,
+      order: [[3, "desc"]],
+      pageLength: 10,
+      dom: "Bfrtip",
+      buttons: ["copy", "csv", "excel"],
+    });
+
+    // Auto slide images when hovering
+    $(".carousel").hover(
+      function () {
+        let carouselId = $(this).attr("id");
+        let interval = setInterval(function () {
+          $("#" + carouselId).carousel("next");
+        }, 2000); // Change image every 2 seconds
+
+        $(this).data("interval", interval);
+      },
+      function () {
+        let carouselId = $(this).attr("id");
+        clearInterval($(this).data("interval"));
+      }
+    );
+  });
+</script>
+{% endblock %}

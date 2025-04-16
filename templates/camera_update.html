@@ -1,0 +1,139 @@
+{% extends 'base.html' %} {% block content %} {% load static %}
+<style>
+  body {
+    background-image: url("{% static '/assets/images/camera_y.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .card {
+    max-width: 550px;
+    width: 100%;
+    margin: auto;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .bg-custom {
+    background-color: #209ba4;
+  }
+  .btn-bg-custom {
+    background-color: #01313f;
+  }
+  .btn-bg-custom:hover {
+    background-color: #082b36;
+    transform: translateY(-2px);
+  }
+  .form-control {
+    padding: 0.75rem 1rem;
+  }
+</style>
+<div class="container mt-5 d-flex justify-content-center form-container">
+  <div class="card">
+    <div
+      class="card-header bg-custom text-white py-2 rounded-top-4 text-center"
+    >
+      <h2>Update Camera URL</h2>
+    </div>
+    <div class="card-body p-4">
+      <form
+        method="post"
+        class="needs-validation"
+        novalidate
+        autocomplete="off"
+      >
+        {% csrf_token %}
+
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="username" class="form-label ms-1 fw-bold"
+              >Username</label
+            >
+            <input
+              type="text"
+              name="username"
+              id="username"
+              value="{{ camera.username }}"
+              class="form-control rounded-5"
+              placeholder="Enter camera username"
+              required
+            />
+            <div class="invalid-feedback">Please provide a username.</div>
+          </div>
+          <div class="col-12">
+            <label for="password" class="form-label ms-1 fw-bold"
+              >Password</label
+            >
+            <input
+              type="password"
+              name="password"
+              id="password"
+              value="{{ camera.password }}"
+              class="form-control rounded-5"
+              placeholder="Enter camera password"
+              required
+            />
+            <div class="invalid-feedback">Please provide a password.</div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="generated_url" class="form-label ms-1 fw-bold"
+            >Camera IP</label
+          >
+          <input
+            type="text"
+            name="ip"
+            id="ip"
+            value="{{ camera.ip }}"
+            class="form-control rounded-5"
+            placeholder="Enter generated URL"
+            required
+          />
+          <div class="invalid-feedback">Please provide a Camera IP.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="channel_name" class="form-label ms-1 fw-bold"
+            >Channel Name</label
+          >
+          <input
+            type="text"
+            name="channel_name"
+            id="channel_name"
+            value="{{ camera.channel_name }}"
+            class="form-control rounded-5"
+            placeholder="Enter channel name (e.g., 1, 2, 3)"
+            required
+          />
+          <div class="invalid-feedback">Please provide a channel name.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label ms-1 fw-bold">Action:</label>
+          <ul class="list-unstyled">
+            <li>
+              <label>
+                <input type="radio" name="check_option" value="0"{% if camera.camera_type|default:'' == "0" %}checked{% endif %}>
+                Check-out
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="radio" name="check_option" value="1" {% if camera.camera_type|default:'' == "1" %}checked{% endif %}>
+                Check-in
+              </label>
+            </li>
+          </ul>
+        </div>
+
+        <div class="fw-medium text-center">
+          <button type="submit" class="btn btn-bg-custom fw-bold text-white">
+            Update Camera URL
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
