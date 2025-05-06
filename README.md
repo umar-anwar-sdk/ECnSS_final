@@ -1,4 +1,0 @@
-env
-media
-db.sqlite3
-migrations

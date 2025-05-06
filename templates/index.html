@@ -3,51 +3,108 @@
 
 <div class="conatiner-fluid content-inner mt-5 py-0">
     <div class="row mt-3">
-        <div class="col-8">
-     
+        <div class="col-12">
 
-              <div id="camera-grid" class="row row-cols-md-2 g-3">
+
+            <div id="camera-grid" class="row row-cols-md-3 g-2">
                 {% for camera in cameras %}
-                <div id="camera-{{ camera.id }}" class="position-relative d-flex justify-content-center align-items-center"
-                    style="height: 300px;">
-                    
+                <div class="d-block">
+                    <!-- <div class="">
+                        {{ camera.channel_name }}
+                    </div> -->
+                <div id="camera-{{ camera.id }}"class="position-relative d-flex justify-content-center align-items-center" style="height: 200px;">
                     <!-- Loader (Centered) -->
+                     
                     <div id="loader-{{ camera.id }}" class="spinner-border text-custom position-absolute" role="status"
                         style="width: 6rem; height: 6rem;">
                         <span class="sr-only">Loading...</span>
                     </div>
-            
+
                     <!-- Video Feed (Initially Hidden) -->
-                    <video id="feed-{{ camera.id }}" class="camera-feed w-100 object-fit-fill d-none" autoplay playsinline muted
-                        style="height: 300px;">
+                    <video id="feed-{{ camera.id }}" class="camera-feed mb-3  rounded-4 w-100 object-fit-fill d-none" autoplay
+                        playsinline muted style="height: 200px;">
                     </video>
                 </div>
+
+                <div class="card-section pt-0 align-items-center rounded-4 mb-3" style="height: 200px;">
+                    <p class="button-checkin mb-0 text-center fw-bold rounded-4 text-white mx-auto">  {% if camera.camera_type == '1' %}
+                        Check-in
+                      {% elif camera.camera_type == '0' %}
+                        Check-out
+                      {% else %}
+                        Unknown
+                      {% endif %}</p>
+                    <div class="card-section-body py-3 px-4">
+                        <div id="detection-container-{{camera.id}}" class="overflow-x-hidden overflow-y-scroll p-1 rounded-3 row detection-height">
+                            
+                                    <div class="col-md-4 mb-2 camera-box">
+                                        
+                                    </div>
+                              
+                        </div>
+                    </div>
+                </div>
+            </div>
                 {% endfor %}
             </div>
-            
-            
+
+
 
         </div>
+    </div>
         <!-- section  two  -->
-        <div class="col-4">
-            <!-- Section Two Part One -->
-            <div class="card-section pt0 align-items-center rounded-4 mb-3">
-                <p class="button-checkin mb-0 text-center fw-bold rounded-4 text-white mx-auto">
-                    Check In
-                </p>
-                <div class="card-section-body py-3 ps-4">
-                    <div id="detection-container" class="row p-1 rounded-3"></div>
-                </div>
-            </div>
+         <div class="row">
+            <div class="col-12 mt-3">
 
-            <div class="card-section pt-0 align-items-center rounded-4">
-                <p class="button-checkin mb-0 text-center fw-bold rounded-4 text-white mx-auto">
-                    Check Out
-                </p>
-                <div class="card-section-body py-3 ps-4">
-                    <div id="detection-container-checkout" class="row p-1 rounded-3"></div>
-                </div>
+                {# ===== Check In Section ===== #}
+                {% if checkin_cameras %}
+                {% for camera in checkin_cameras %}
+                {% if camera.channel_name %}
+                    <!-- <div class="card-section pt-0 align-items-center rounded-4 mb-3">
+                        <p class="button-checkin mb-0 text-center fw-bold rounded-4 text-white mx-auto">Check In</p>
+                        <div class="card-section-body py-3 ps-4">
+                            <div id="detection-container" class="row p-1 rounded-3">
+                                
+                                        <div class="col-md-4 mb-2 camera-box">
+                                            <div class="camera-box-inner rounded-3 p-2 border bg-light shadow">
+                                                <p class="mb-1 fw-bold">Camera - Channel {{ camera.channel_name }}</p>
+                                                <div class="camera-stream-box"
+                                                     data-url="{{ camera.generated_url }}"
+                                                     data-channel="{{ camera.channel_name }}"></div>
+                                            </div>
+                                        </div>
+                                  
+                            </div>
+                        </div>
+                    </div> -->
+                    {% endif %}
+                    {% endfor %}
+                {% endif %}
+        
+                {% if checkout_cameras %}
+                {% for camera in checkout_cameras %}
+                {% if camera.channel_name %}
+                    <!-- <div class="card-section pt-0 align-items-center rounded-4 mb-3">
+                        <p class="button-checkin mb-0 text-center fw-bold rounded-4 text-white mx-auto">Check Out</p>
+                        <div class="card-section-body py-3 ps-4">
+                            <div id="detection-container-checkout" class="row p-1 rounded-3">
+                                        <div class="col-md-4 mb-2 camera-box">
+                                            <div class="camera-box-inner rounded-3 p-2 border bg-light shadow">
+                                                <p class="mb-1 fw-bold">Camera - Channel {{ camera.channel_name }}</p>
+                                                <div class="camera-stream-box"
+                                                     data-url="{{ camera.generated_url }}"
+                                                     data-channel="{{ camera.channel_name }}"></div>
+                                            </div>
+                                        </div>
+                            </div>
+                        </div>
+                    </div> -->
+                    {% endif %}
+                    {% endfor %}    
+                {% endif %}
+            
             </div>
+            
 
             <!-- Bootstrap Toast Notification -->
             <div class="toast-container position-fixed top-0 end-0 p-3">

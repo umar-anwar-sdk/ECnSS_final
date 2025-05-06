@@ -35,7 +35,6 @@ class DetectionConsumer(AsyncWebsocketConsumer):
 
     async def send_detection(self, event):
         try:
-            print(f"Sending detection: {event}")
             data = event["data"] 
             if "license_plate_id" in data and data["license_plate_id"]:
                 license_plate = await self.get_license_plate(data["license_plate_id"])
@@ -53,9 +52,14 @@ class DetectionConsumer(AsyncWebsocketConsumer):
                         "helmet": "Yes" if license_plate.has_helmet else "No" if license_plate.has_helmet is not None else "N/A",
                         "seatbelt": "Yes" if license_plate.has_seatbelt else "No" if license_plate.has_seatbelt is not None else "N/A",
                         "check_in_time": data.get("check_in_time"),
-                        "check_out_time": data.get("check_out_time")
+                        "check_out_time": data.get("check_out_time"),
+                        'channel_id': data.get('channel_id'),
+                    
                     }
+                    print(f"vechicle send camera id: {data.get('channel_id')}")  
+                    print(f"vechicle send detection type: {data.get('detection_type')}") 
                     data = updated_data
+                    print(f"Updated data: {data}")
             await self.send(text_data=json.dumps(data))
         except Exception as e:
             print(f"Error in send_detection: {e}")

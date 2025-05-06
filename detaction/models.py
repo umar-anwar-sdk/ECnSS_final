@@ -55,6 +55,7 @@ def license_plate_upload_path(instance, filename):
 class detectionRecord(models.Model):
     vehicle_id = models.IntegerField(null=True)
     plate_number = models.CharField(max_length=20, null=True)
+    id_card_no = models.CharField(max_length=20, null=True, blank=True)
     has_helmet = models.BooleanField(null=True)
     has_seatbelt = models.BooleanField(null=True)
     seatbelt_image = models.ImageField(upload_to='seatbelt_images/', null=True)
@@ -68,14 +69,15 @@ class detectionRecord(models.Model):
     check_out_time = models.DateTimeField(null=True)
     detection_type = models.CharField(max_length=1,choices=DETECTION_CHOICES,default='1')
     status = models.TextField(null=True, blank=True)
-    missed = models.BooleanField(default=False)  
+    missed = models.BooleanField(default=False)
+    channel_id= models.IntegerField(max_length=10, null=True, blank=True)  
     def __str__(self):
         return f"License Plate {self.plate_number}"
 class CameraConfig(models.Model):
     username = models.CharField(max_length=100)
     password = models.CharField(max_length=10)
     ip = models.CharField(max_length=30)
-    channel_name = models.CharField(max_length=50)
+    channel_name = models.IntegerField(max_length=10)
     generated_url = models.CharField(max_length=255, null= True,blank=True)
     camera_type = models.CharField(max_length=1, choices=DETECTION_CHOICES)
     def save(self, *args, **kwargs):

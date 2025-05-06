@@ -1,4 +1,5 @@
 {% load static %}
+{% load active_link_tags %}
 <!doctype html>
 <html lang="en" dir="ltr">
 
@@ -74,6 +75,51 @@
             display: none;
             padding: 10px;
         }
+          /* Base link style */
+          .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #555;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        /* Active link style */
+        .nav-link.active {
+            background-color: #f0f0f0;
+            color: #000;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+
+        /* Icon inside active link */
+        .nav-link.active i svg {
+            color: #000;
+        }
+
+        /* Hover effect */
+        .nav-link:hover {
+            background-color: #f9f9f9;
+            color: #000;
+        }
+
+        /* Sidebar menu */
+        .navbar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            margin-left: 10px;
+            font-size: 16px;
+        }
     </style>
 </head>
 
@@ -110,80 +156,81 @@
         <div class="sidebar-body pt-0 data-scrollbar">
             <div class="sidebar-list">
                 <!-- Sidebar Menu Start -->
-                <ul class="navbar-nav iq-main-menu" id="sidebar-menu">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'home' %}">
-                            <i class="icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path fill="currentColor" d="M12 3L2 12H5V20H10V15H14V20H19V12H22L12 3Z" />
-                                </svg>
-                            </i>
-                            <span class="item-name">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'camera_list' %}">
-                            <i class="icon">
-                                <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill="currentColor"
-                                        d="M23 3H1C0.447 3 0 3.447 0 4V20C0 20.553 0.447 21 1 21H23C23.553 21 24 20.553 24 20V4C24 3.447 23.553 3 23 3ZM2 19V5H22V19H2ZM4 7H6V9H4V7ZM4 11H6V13H4V11ZM4 15H6V17H4V15Z">
-                                    </path>
-                                </svg>
-                            </i>
-                            <span class="item-name">All Cameras</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a id="start-detection" class="nav-link" href="#">
-                            <i class="icon">
-                                <svg width="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                    class="icon-20">
-                                    <path d="M6 5L16 12L6 19V5Z" fill="currentColor"></path>
-                                </svg>
-                            </i>
-                            <span class="item-name">Start Detection</span>
-                        </a>
-                    </li>
-                    
-                    <li class="nav-item">
-                        <a id="stop-detection" class="nav-link" href="#">
-                            <i class="icon">
-                                <svg width="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-                                    class="icon-20">
-                                    <rect x="6" y="6" width="12" height="12" fill="currentColor"></rect>
-                                </svg>
-                            </i>
-                            <span class="item-name">Stop Detection</span>
-                        </a>
-                    </li>
-                    
-                    <div id="detection-status"></div>
-                    
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="{% url 'detection_history' %}">
-                            <i class="icon">
-                                <svg width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" stroke="currentColor"
-                                        stroke-width="2" fill="none"></rect>
-                                    <circle cx="9" cy="12" r="3" fill="currentColor"></circle>
-                                    <path d="M15 10L20 14V6L15 10Z" fill="currentColor"></path>
-                                </svg>
+                
+<ul class="navbar-nav iq-main-menu" id="sidebar-menu">
 
-                            </i>
-                            <span class="item-name">Detection History</span>
-                        </a>
-                    </li>
+    <li class="nav-item">
+        <a class="nav-link {% active_link 'home' 'active' %}" aria-current="page" href="{% url 'home' %}">
+            <i class="icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor" d="M12 3L2 12H5V20H10V15H14V20H19V12H22L12 3Z"/>
+                </svg>
+            </i>
+            <span class="item-name">Home</span>
+        </a>
+    </li>
 
+    <li class="nav-item">
+        <a class="nav-link {% active_link 'camera_list' 'active' %}" href="{% url 'camera_list' %}">
+            <i class="icon">
+                <svg width="20" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path fill="currentColor"
+                          d="M23 3H1C0.447 3 0 3.447 0 4V20C0 20.553 0.447 21 1 21H23C23.553 21 24 20.553 24 20V4C24 3.447 23.553 3 23 3ZM2 19V5H22V19H2ZM4 7H6V9H4V7ZM4 11H6V13H4V11ZM4 15H6V17H4V15Z">
+                    </path>
+                </svg>
+            </i>
+            <span class="item-name">All Cameras</span>
+        </a>
+    </li>
 
-                    <!-- <li class="nav-item ">
-                                <button type="button" class="btn btn-primary">Primary</button>
+    <li class="nav-item">
+        <a id="start-detection" class="nav-link {% active_link 'start_dection' 'active' %}" href="{% url 'start_dection' %}">
+            <i class="icon">
+                <svg width="50" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg" class="icon-20">
+                    <path d="M6 5L16 12L6 19V5Z" fill="currentColor"></path>
+                </svg>
+            </i>
+            <span class="item-name">Start Detection</span>
+        </a>
+    </li>
 
-                     </li> -->
+    <li class="nav-item">
+        <a id="stop-detection" class="nav-link {% active_link 'stop_dection' 'active' %}" href="{% url 'stop_dection' %}">
+            <i class="icon">
+                <svg width="50" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg" class="icon-20">
+                    <rect x="6" y="6" width="12" height="12" fill="currentColor"></rect>
+                </svg>
+            </i>
+            <span class="item-name">Stop Detection</span>
+        </a>
+    </li>
 
-                </ul>
+    <div id="detection-status"></div>
+
+    <li class="nav-item">
+        <a class="nav-link {% active_link 'detection_history' 'active' %}" href="{% url 'detection_history' %}">
+            <i class="icon">
+                <svg width="20" viewBox="0 0 24 24" fill="none"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" stroke="currentColor"
+                          stroke-width="2" fill="none"></rect>
+                    <circle cx="9" cy="12" r="3" fill="currentColor"></circle>
+                    <path d="M15 10L20 14V6L15 10Z" fill="currentColor"></path>
+                </svg>
+            </i>
+            <span class="item-name">Detection History</span>
+        </a>
+    </li>
+
+</ul>
+
                 <!-- Sidebar Menu End -->
             </div>
+            
         </div>
         <div class="sidebar-footer"></div>
     </aside>
@@ -360,8 +407,7 @@ $(document).ready(function () {
        </script>
 
         <script>
-            const checkInContainer = document.getElementById('detection-container');
-            const checkOutContainer = document.getElementById('detection-container-checkout');
+            // let checkInContainer = document.getElementById('detection-container');
             const socket = new WebSocket('ws://' + window.location.host + '/ws/detections/');
             const MAX_DETECTIONS = 50;
             const displayedDetections = new Set();
@@ -390,14 +436,17 @@ $(document).ready(function () {
 
                     // Show toast notification
                     showAlert(`Status: ${status}`, "info"); // Blue info toast
-
-                    const targetContainer = detectionType === '1' ? checkInContainer : checkOutContainer;
+                    const targetContainer = document.getElementById(`detection-container-${data.channel_id}`);
+                    if (!targetContainer) {
+                        console.error(`Target container for channel ${data.channel} not found.`);
+                        return;
+                    }
 
                     const detectionCard = `
             <div class="col-12 mb-3 bg-white ps-3 rounded-3">
                 <div class="row align-items-center">
                     <div class="col-5 p-0">
-                        <img src="${data.image_url}" 
+                        <img src="${data.image_url}" channel_id
                              class="rounded-2" 
                              height="70px" 
                              width="100%" 

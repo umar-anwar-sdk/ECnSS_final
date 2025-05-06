@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.conf import settings
 from django.contrib import messages
@@ -15,11 +16,25 @@ active_threads = []
 @login_required(login_url='login')
 def home(request):
     cameras = CameraConfig.objects.all()
+    checkin_cameras = cameras.filter(camera_type='1')
+    checkout_cameras = cameras.filter(camera_type='0')
+
+    # Send camera type and ID as JSON
+    camera_json_data = [
+        {
+            'id': cam.id,
+            'camera_type': 'Check-in' if cam.camera_type == '1' else 'Check-out'
+        }
+        for cam in cameras
+    ]
+
     context = {
         'cameras': cameras,
+        'checkin_cameras': checkin_cameras,
+        'checkout_cameras': checkout_cameras,
+        'camera_json_data': camera_json_data,
     }
     return render(request, 'index.html', context)
-
 def stop():
     global global_stop_signal
     print("Not Set : ",global_stop_signal)
@@ -101,11 +116,19 @@ def camera_update(request, id):
 
 @login_required(login_url='login')
 def detection_history(request):
+    vehicle_type = request.GET.get('vehicle_type')  
     detectionRecords = detectionRecord.objects.all()
+
+    if vehicle_type == 'car_truck':
+        detectionRecords = detectionRecords.filter(vehicle_class__in=['car', 'truck','bus'])
+    elif vehicle_type == 'motorcycle_bike':
+        detectionRecords = detectionRecords.filter(vehicle_class__in=['motorcycle', 'bike'])
+
     context = {
         'detectionRecords': detectionRecords,
     }
     return render(request, 'detection_history.html', context)
+
 @login_required(login_url='login')
 def detection_delete(request, id):
     detection = detectionRecord.objects.get(id=id)
@@ -176,4 +199,17 @@ def start_detections_view(request):
         return JsonResponse({"success": success, "message": message})
     except Exception as e:
         return JsonResponse({"success": False, "message": f"Error: {str(e)}"})
+    
+@csrf_exempt
+def update_id_card_no(request):
+    if request.method == 'POST':
+        record_id = request.POST.get('id')
+        new_id_card = request.POST.get('id_card_no')
+        try:
+            record = detectionRecord.objects.get(id=record_id)
+            record.id_card_no = new_id_card
+            record.save()
+            return JsonResponse({'status': 'success'})
+        except detectionRecord.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Record not found'})
 

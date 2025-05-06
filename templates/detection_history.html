@@ -1,20 +1,50 @@
 {% extends 'base.html' %} {% block content %}
+<style>
+  .btn-color {
+    background-color: #01313f; 
+    color: #fff;
+    border-color: #01313f;
+  }
+  .btn-color:hover {
+    background-color: #01313f;
+    border-color: #01313f;
+    color: #fff;
+  }
+  .dataTables_wrapper{
+    margin-bottom:4rem ;
+  }
+</style>
 <div class="container-fluid px-4 mt-4 mb-5">
+  <div class="mb-3">
+    <a href="{% url 'detection_history' %}?vehicle_type=car_truck"
+       class="btn {% if request.GET.vehicle_type == 'car_truck' %}btn-color{% else %}btn-outline-dark{% endif %}">
+      Car / Truck
+    </a>
+    <a href="{% url 'detection_history' %}?vehicle_type=motorcycle_bike"
+       class="btn {% if request.GET.vehicle_type == 'motorcycle_bike' %}btn-color{% else %}btn-outline-dark{% endif %} ms-2">
+      Motorcycle / Bike
+    </a>
+    <a href="{% url 'detection_history' %}"
+       class="btn {% if not request.GET.vehicle_type %}btn-color{% else %}btn-outline-dark{% endif %} ms-2">
+      Show All
+    </a>
+  </div>
+</div>
   <h1>Detection History</h1>
   <table
     id="example"
-    class="display responsive nowrap table table-striped table-bordered w-100"
+    class="display mb-5 responsive nowrap table table-striped table-bordered w-100"
   >
     <thead class="thead-dark">
       <tr>
         <th>Vehicle Images</th>
+        <th>ID Card No:</th>
         <th>Vehicle</th>
         <th>Number Plate</th>
         <th>Check In</th>
         <th>Check Out</th>
         <th>Helmet</th>
         <th>Seatbelt</th>
-        <th>Action</th>
       </tr>
     </thead>
     <tbody>
@@ -63,7 +93,7 @@
                   class="d-block w-100"
                   style="height: 150px; object-fit: fill; border-radius: 5px"
                   alt="Helmet Detection Image"
-                />
+                />dataTables_wrapper
               </div>
               {% endif %} {% if detection.seatbelt_image %}
               <div class="carousel-item">
@@ -78,6 +108,11 @@
             </div>
           </div>
         </td>
+        <td class="editable-id-card"
+        data-id="{{ detection.id }}"
+        style="background-color: #fff; border: 1px solid #ccc;">
+        {{ detection.id_card_no }}
+    </td>
         <td>{{ detection.vehicle_class }}</td>
         <td>{{ detection.plate_number }}</td>
         <td>{{ detection.check_in_time }}</td>
@@ -104,7 +139,7 @@
           ></span>
           {% endif %}
         </td>
-        <td class="text-center">
+        <!-- <td class="text-center">
           <a
             href="{% url 'detection_update' detection.id %}"
             class="btn bg-custom btn-sm text-white"
@@ -115,7 +150,7 @@
             class="btn btn-danger btn-sm text-white"
             ><i class="fa-solid fa-trash"></i
           ></a>
-        </td>
+        </td> -->
       </tr>
       {% endif %} {% endfor %}
     </tbody>
@@ -176,4 +211,95 @@
     );
   });
 </script>
+<script>
+  $(document).ready(function () {
+      $('.editable-id-card').on('blur', function () {
+          let element = $(this);
+          let recordId = element.data('id');
+          let idCardNo = element.text().trim();
+  
+          $.ajax({
+              url: '{% url "update_id_card_no" %}',
+              method: 'POST',
+              data: {
+                  'id': recordId,
+                  'id_card_no': idCardNo,
+                  'csrfmiddlewaretoken': '{{ csrf_token }}'
+              },
+              success: function (response) {
+                  console.log('Saved:', response);
+              },
+              error: function (xhr, status, error) {
+                  console.error('Save failed:', error);
+              }
+          });
+      });
+  });
+  </script>
+<!-- jQuery (first) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/3/jquery.inputmask.bundle.js"></script>
+
+<!-- Your custom script (third) -->
+<script>
+  $(document).ready(function () {
+    $('.editable-id-card').on('click', function () {
+      const $td = $(this);
+      const currentValue = $td.text().trim();
+      if ($td.find('input').length > 0) return;
+
+      const $input = $('<input type="text" />')
+        .val(currentValue)
+        .css({
+          width: '100%',
+          border: 'none',
+          outline: 'none',
+          background: 'transparent',
+          'font-family': 'inherit',
+          'font-size': 'inherit'
+        });
+
+      $td.empty().append($input);
+
+      // Make sure Inputmask is defined here
+      if (typeof Inputmask !== 'undefined') {
+        Inputmask("99999-9999999-9").mask($input[0]);
+      } else {
+        console.error('Inputmask is still not defined!');
+      }
+
+      $input.focus();
+    });
+
+    $(document).on('blur', '.editable-id-card input', function () {
+      const $input = $(this);
+      const newValue = $input.val().trim();
+      const $td = $input.closest('.editable-id-card');
+      const recordId = $td.data('id');
+
+      $td.text(newValue);
+
+      $.ajax({
+        url: '{% url "update_id_card_no" %}',
+        method: 'POST',
+        data: {
+          'id': recordId,
+          'id_card_no': newValue,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (response) {
+          console.log('Saved:', response);
+        },
+        error: function (xhr, status, error) {
+          console.error('Save failed:', error);
+        }
+      });
+    });
+  });
+</script>
+
+
+  
 {% endblock %}
